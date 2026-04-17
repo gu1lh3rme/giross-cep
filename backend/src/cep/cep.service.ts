@@ -8,7 +8,7 @@ export class CepService {
   constructor(private readonly csvService: CsvService) {}
 
   async searchCepsInRadius(cep: string, raioKm: number): Promise<CepSearchResult[]> {
-    const normalizedCep = cep.replace('-', '');
+    const normalizedCep = cep.replace(/-/g, '');
     
     const originCep = this.csvService.getCepByCode(normalizedCep);
     if (!originCep) {
