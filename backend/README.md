@@ -17,10 +17,104 @@ Esta API fornece endpoints para consulta de CEPs, incluindo funcionalidades de:
 
 ## Funcionalidades
 
-- **Consulta de CEP**: Busca informações detalhadas por CEP
-- **Busca por proximidade**: Encontra CEPs próximos a uma localização
-- **Processamento de CSV**: Importa dados de CEPs de arquivos CSV
+- **Consulta de CEP**: Busca informações detalhadas por CEP usando a API do CEP Aberto
+- **Busca por proximidade**: Encontra CEPs próximos a uma localização geográfica  
+- **Fallback inteligente**: Utiliza dados locais CSV quando a API externa não está disponível
+- **Cache em memória**: Armazena resultados para melhor performance
 - **Telemetria**: Interceptador para monitoramento de requisições
+
+## 🔧 Configuração da API CEP Aberto
+
+### 1. Obtenha seu Token de Acesso
+
+1. Acesse: https://www.cepaberto.com/users/login
+2. Faça login com suas credenciais:
+   - **Usuário**: `gu1lh3rmesv`
+   - **Senha**: `BobEsponja`
+3. No painel do usuário, procure por "API Key" ou "Token"
+4. Copie o token de acesso
+
+### 2. Configure o Arquivo .env
+
+Crie ou edite o arquivo `.env` na raiz do projeto backend:
+
+```bash
+# Token da API CEP Aberto
+CEP_ABERTO_TOKEN=seu_token_aqui
+
+# Configurações da aplicação
+NODE_ENV=development
+PORT=3001
+```
+
+### 3. Teste a Configuração
+
+Execute o script de teste para verificar se o token está funcionando:
+
+```bash
+node test-token.js
+```
+
+Se o token estiver funcionando, você verá uma mensagem de sucesso com dados de teste.
+
+## 🔄 Funcionamento Híbrido
+
+A aplicação utiliza uma estratégia híbrida para garantir alta disponibilidade:
+
+### 1. Fonte Principal: API CEP Aberto
+- **Vantagem**: Dados atualizados e completos (1.1M+ CEPs)
+- **Requisitos**: Token de acesso configurado e conexão com internet
+- **Cobertura**: Todo o Brasil com coordenadas geográficas precisas
+
+### 2. Fallback: Dados Locais CSV  
+- **Vantagem**: Funciona offline, resposta rápida
+- **Limitação**: Dados limitados à região de São Paulo (120+ CEPs)
+- **Uso**: Quando a API externa falha ou não está configurada
+
+### 3. Sistema de Cache
+- **Cache em memória**: Resultados da API são armazenados temporariamente
+- **Reduz requisições**: Melhora performance para CEPs consultados repetidamente
+- **TTL configurável**: Através da variável `CACHE_TTL` no .env
+
+## 🧪 Testando a Integração
+
+### Teste Rápido via Browser
+```
+http://localhost:3001/cep/01310100
+```
+
+### Teste com curl
+```bash
+# Buscar CEP específico
+curl "http://localhost:3001/cep/01310100"
+
+# Buscar CEPs em raio de 5km  
+curl "http://localhost:3001/cep/search?cep=01310100&raioKm=5"
+```
+
+### Teste via Swagger UI
+Acesse: http://localhost:3001/api
+
+## 🚨 Troubleshooting
+
+### Problema: "CEP não encontrado"
+**Solução**: 
+1. Verifique se o token está configurado corretamente
+2. Teste o token: `node test-token.js`
+3. Se necessário, obtenha um novo token no site do CEP Aberto
+
+### Problema: "Erro ao consultar API externa"  
+**Solução**:
+1. Verifique sua conexão com internet
+2. Confirme se o token não expirou
+3. A aplicação automaticamente usará dados locais como fallback
+
+### Problema: "Token expirado"
+**Solução**:
+1. Acesse https://www.cepaberto.com/users/login
+2. Faça login novamente
+3. Obtenha um novo token no painel
+4. Atualize o arquivo `.env` com o novo token
 
 ## Configuração do Projeto
 
@@ -56,9 +150,43 @@ $ npm run test:cov
 
 ## Endpoints da API
 
-- `GET /cep/:cep` - Busca informações de um CEP específico
-- `GET /cep/nearby` - Busca CEPs próximos a uma localização
-- `POST /cep/import` - Importa dados de CEPs via CSV
+### 1. Buscar CEPs em Raio Geográfico
+
+**Endpoint**: `GET /cep/search`
+
+**Parâmetros**:
+- `cep`: CEP de origem (string) - Ex: "01310100" ou "01310-100"
+- `raioKm`: Raio em quilômetros (number) - Ex: 5
+
+**Exemplo**:
+```bash
+curl "http://localhost:3001/cep/search?cep=01310100&raioKm=5"
+```
+
+### 2. Buscar CEP Específico
+
+**Endpoint**: `GET /cep/:cep`
+
+**Parâmetros**:
+- `cep`: Código CEP (parâmetro da URL) - Ex: "01310100"
+
+**Exemplo**:
+```bash
+curl "http://localhost:3001/cep/01310100"
+```
+
+**Resposta**:
+```json
+{
+  "cep": "01310100",
+  "logradouro": "Avenida Paulista",
+  "bairro": "Bela Vista",
+  "localidade": "São Paulo",
+  "uf": "SP",
+  "latitude": -23.5597000098,
+  "longitude": -46.6487628251
+}
+```
 
 ## Estrutura do Projeto
 
