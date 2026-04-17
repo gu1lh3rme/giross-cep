@@ -16,7 +16,7 @@ export class CsvService implements OnModuleInit {
   }
 
   private normalizeCep(cep: string): string {
-    return cep.replace('-', '');
+    return cep.replace(/-/g, '');
   }
 
   async loadCsvData(): Promise<void> {

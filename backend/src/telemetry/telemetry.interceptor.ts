@@ -4,6 +4,7 @@ import {
   ExecutionContext,
   CallHandler,
   Logger,
+  OnModuleDestroy,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -11,7 +12,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 @Injectable()
-export class TelemetryInterceptor implements NestInterceptor {
+export class TelemetryInterceptor implements NestInterceptor, OnModuleDestroy {
   private readonly logger = new Logger(TelemetryInterceptor.name);
   private readonly logDir = path.join(process.cwd(), 'logs');
   private readonly logFile = path.join(this.logDir, 'telemetry.log');
@@ -22,6 +23,10 @@ export class TelemetryInterceptor implements NestInterceptor {
       fs.mkdirSync(this.logDir, { recursive: true });
     }
     this.logStream = fs.createWriteStream(this.logFile, { flags: 'a' });
+  }
+
+  onModuleDestroy() {
+    this.logStream.end();
   }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
