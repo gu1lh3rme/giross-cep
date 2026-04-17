@@ -1,73 +1,89 @@
-# React + TypeScript + Vite
+# Frontend - Giross CEP
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web desenvolvida em React + TypeScript + Vite para interface de usuário do sistema de consulta de CEPs.
 
-Currently, two official plugins are available:
+## Descrição
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Esta aplicação frontend fornece uma interface intuitiva para:
 
-## React Compiler
+- Consulta de CEPs
+- Visualização de informações de endereço
+- Busca de CEPs próximos
+- Interface responsiva e moderna
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias Utilizadas
 
-## Expanding the ESLint configuration
+- **React 18**: Biblioteca para construção da interface
+- **TypeScript**: Linguagem de programação tipada
+- **Vite**: Ferramenta de build e desenvolvimento
+- **ESLint**: Linting e formatação de código
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Configuração e Execução
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# Instalar dependências
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+# Executar em modo desenvolvimento
+npm run dev
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Compilar para produção
+npm run build
+
+# Visualizar build de produção
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Scripts Disponíveis
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `npm run dev` - Inicia o servidor de desenvolvimento
+- `npm run build` - Compila a aplicação para produção
+- `npm run preview` - Visualiza a build de produção localmente
+- `npm run lint` - Executa o ESLint para verificação de código
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Estrutura do Projeto
+
 ```
+src/
+├── App.tsx              # Componente principal
+├── main.tsx            # Ponto de entrada da aplicação
+├── App.css             # Estilos do componente principal
+├── index.css           # Estilos globais
+└── assets/             # Recursos estáticos
+```
+
+## Funcionalidades Planejadas
+
+- Interface para busca de CEP
+- Exibição de informações de endereço
+- Mapa de localização
+- Busca por CEPs próximos
+- Histórico de consultas
+- Interface responsiva
+
+## Configuração da API
+
+Para conectar com a API backend, configure a URL base da API no arquivo de configuração apropriado.
+
+## Desenvolvimento
+
+Esta aplicação foi criada com Vite para facilitar o desenvolvimento com:
+
+- Hot Module Replacement (HMR)
+- Build otimizado
+- Suporte nativo ao TypeScript
+- ESLint configurado
+
+## Contribuição
+
+Para contribuir com o projeto:
+
+1. Faça um fork do repositório
+2. Crie uma branch para sua feature
+3. Implemente as mudanças
+4. Execute os testes e linting
+5. Faça um pull request
+
+## Licença
+
+Este projeto está licenciado sob a licença MIT.

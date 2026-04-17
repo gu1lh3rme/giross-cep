@@ -9,7 +9,7 @@ export class SearchCepDto {
   })
   @IsString()
   @Matches(/^\d{5}-?\d{3}$/, { message: 'CEP inválido. Use o formato XXXXXYYY ou XXXXX-YYY' })
-  cep: string;
+  cep!: string;
 
   @ApiProperty({
     description: 'Raio de busca em quilômetros',
@@ -19,5 +19,5 @@ export class SearchCepDto {
   @Type(() => Number)
   @IsNumber()
   @IsPositive()
-  raioKm: number;
+  raioKm!: number;
 }

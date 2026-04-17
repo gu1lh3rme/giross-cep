@@ -18,24 +18,35 @@ export class CepService {
     const allCeps = this.csvService.getAllCeps();
     
     const results: CepSearchResult[] = [];
+    const batchSize = 1000; // Processa 1000 CEPs por vez
     
-    for (const item of allCeps) {
-      const distance = haversineDistance(
-        originCep.latitude,
-        originCep.longitude,
-        item.latitude,
-        item.longitude,
-      );
+    // Processa em chunks para não bloquear o event loop
+    for (let i = 0; i < allCeps.length; i += batchSize) {
+      const batch = allCeps.slice(i, i + batchSize);
       
-      if (distance <= raioKm) {
-        results.push({
-          cep: item.cep,
-          logradouro: item.logradouro,
-          bairro: item.bairro,
-          localidade: item.localidade,
-          uf: item.uf,
-          distanciaKm: Math.round(distance * 1000) / 1000,
-        });
+      for (const item of batch) {
+        const distance = haversineDistance(
+          originCep.latitude,
+          originCep.longitude,
+          item.latitude,
+          item.longitude,
+        );
+        
+        if (distance <= raioKm) {
+          results.push({
+            cep: item.cep,
+            logradouro: item.logradouro,
+            bairro: item.bairro,
+            localidade: item.localidade,
+            uf: item.uf,
+            distanciaKm: Math.round(distance * 1000) / 1000,
+          });
+        }
+      }
+      
+      // Libera o event loop para outras operações
+      if (i + batchSize < allCeps.length) {
+        await new Promise(resolve => setImmediate(resolve));
       }
     }
     
