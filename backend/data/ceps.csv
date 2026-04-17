@@ -1,0 +1,127 @@
+cep,logradouro,bairro,localidade,uf,latitude,longitude
+01310100,Avenida Paulista,Bela Vista,São Paulo,SP,-23.5632,-46.6542
+01310200,Avenida Paulista,Bela Vista,São Paulo,SP,-23.564,-46.6555
+0131654,Avenida Brasil,Bela Vista,São Paulo,SP,-23.409848,-46.513423
+0131228,Avenida Sumaré,Bela Vista,São Paulo,SP,-23.545481,-46.63097
+0132913,Rua Augusta,Consolação,São Paulo,SP,-23.716353,-46.70316
+0132030,Rua Alameda Santos,Consolação,São Paulo,SP,-23.510904,-46.616107
+0133027,Rua Mourato Coelho,Jardins,São Paulo,SP,-23.742566,-46.733453
+0133558,Rua da Liberdade,Jardins,São Paulo,SP,-23.669414,-46.590041
+0134828,Avenida Rebouças,Higienópolis,São Paulo,SP,-23.42347,-46.81797
+0134714,Rua Haddock Lobo,Higienópolis,São Paulo,SP,-23.629596,-46.615914
+0135980,Rua Pamplona,Centro,São Paulo,SP,-23.560861,-46.684229
+0135099,Rua da Liberdade,Centro,São Paulo,SP,-23.621995,-46.575644
+0136826,Avenida Brigadeiro Faria Lima,Itaim Bibi,São Paulo,SP,-23.44363,-46.617675
+0136996,Avenida 9 de Julho,Itaim Bibi,São Paulo,SP,-23.544391,-46.665099
+0137849,Avenida Ibirapuera,Vila Olímpia,São Paulo,SP,-23.728505,-46.842985
+0137591,Rua Cardeal Arcoverde,Vila Olímpia,São Paulo,SP,-23.556532,-46.635025
+0138233,Avenida Brasil,Moema,São Paulo,SP,-23.52474,-46.941652
+0138887,Rua Teodoro Sampaio,Moema,São Paulo,SP,-23.502699,-46.605608
+0139854,Rua Haddock Lobo,Pinheiros,São Paulo,SP,-23.629284,-46.572249
+0139686,Rua Teodoro Sampaio,Pinheiros,São Paulo,SP,-23.590154,-46.379592
+0140073,Avenida Sumaré,Vila Madalena,São Paulo,SP,-23.599,-46.686152
+0140250,Rua Teodoro Sampaio,Vila Madalena,São Paulo,SP,-23.510112,-46.558473
+0141704,Rua Aspicuelta,Perdizes,São Paulo,SP,-23.736511,-46.7249
+0141794,Rua Harmonia,Perdizes,São Paulo,SP,-23.354669,-46.570777
+0142323,Rua Peixoto Gomide,Lapa,São Paulo,SP,-23.577749,-46.642845
+0142897,Rua Itapeva,Lapa,São Paulo,SP,-23.574707,-46.715624
+0143405,Rua Consolação,Santana,São Paulo,SP,-23.433102,-46.779833
+0143271,Avenida Angélica,Santana,São Paulo,SP,-23.434496,-46.485272
+0144269,Rua Peixoto Gomide,Tatuapé,São Paulo,SP,-23.565372,-46.780504
+0144408,Rua Consolação,Tatuapé,São Paulo,SP,-23.737608,-46.429987
+0145521,Avenida Brigadeiro Faria Lima,Ipiranga,São Paulo,SP,-23.767296,-46.645123
+0145156,Rua Estados Unidos,Ipiranga,São Paulo,SP,-23.71223,-46.821862
+0146610,Avenida Europa,Santo André,Santo André,SP,-23.468168,-46.610469
+0146541,Avenida Paulista,Santo André,Santo André,SP,-23.564528,-46.491085
+0147696,Avenida Angélica,São Bernardo,São Bernardo do Campo,SP,-23.596903,-46.851814
+0147768,Avenida Brigadeiro Faria Lima,São Bernardo,São Bernardo do Campo,SP,-23.581479,-46.466264
+0148300,Avenida Sumaré,Guarulhos,Guarulhos,SP,-23.67567,-46.600887
+0148896,Rua Aspicuelta,Guarulhos,Guarulhos,SP,-23.612938,-46.935582
+0420182,Rua Teodoro Sampaio,Osasco,Osasco,SP,-23.591926,-46.655714
+0420305,Rua Haddock Lobo,Osasco,Osasco,SP,-23.48847,-46.779737
+0421156,Rua Aspicuelta,Bela Vista,São Paulo,SP,-23.593862,-46.620289
+0421944,Rua Vergueiro,Bela Vista,São Paulo,SP,-23.563352,-46.654232
+0422500,Rua Harmonia,Consolação,São Paulo,SP,-23.31397,-46.620759
+0422314,Rua Peixoto Gomide,Consolação,São Paulo,SP,-23.558889,-46.583334
+0423969,Rua Oscar Freire,Jardins,São Paulo,SP,-23.389116,-46.551714
+0423778,Rua Cardeal Arcoverde,Jardins,São Paulo,SP,-23.596474,-46.661767
+0424486,Rua Bela Cintra,Higienópolis,São Paulo,SP,-23.521037,-46.670159
+0424893,Avenida Angélica,Higienópolis,São Paulo,SP,-23.767535,-46.83072
+0425773,Avenida 9 de Julho,Centro,São Paulo,SP,-23.570037,-46.71304
+0425408,Avenida Europa,Centro,São Paulo,SP,-23.387639,-46.660039
+0430921,Avenida Brasil,Itaim Bibi,São Paulo,SP,-23.595705,-46.658132
+0430065,Avenida Brasil,Itaim Bibi,São Paulo,SP,-23.646777,-46.50663
+0431602,Rua Teodoro Sampaio,Vila Olímpia,São Paulo,SP,-23.55963,-46.633633
+0431060,Rua Vergueiro,Vila Olímpia,São Paulo,SP,-23.530916,-46.389565
+0432072,Rua Itapeva,Moema,São Paulo,SP,-23.638167,-46.661494
+0432219,Rua Peixoto Gomide,Moema,São Paulo,SP,-23.752791,-46.706247
+0433590,Rua Harmonia,Pinheiros,São Paulo,SP,-23.772141,-46.614669
+0433416,Rua Estados Unidos,Pinheiros,São Paulo,SP,-23.553619,-46.627599
+0434362,Avenida Sumaré,Vila Madalena,São Paulo,SP,-23.675149,-46.59059
+0434055,Avenida Brigadeiro Faria Lima,Vila Madalena,São Paulo,SP,-23.686386,-46.911391
+0435062,Avenida Brigadeiro Faria Lima,Perdizes,São Paulo,SP,-23.638267,-46.596736
+0435254,Rua Consolação,Perdizes,São Paulo,SP,-23.511192,-46.506603
+0440432,Rua Oscar Freire,Lapa,São Paulo,SP,-23.512455,-46.529531
+0440453,Avenida Brigadeiro Faria Lima,Lapa,São Paulo,SP,-23.480717,-46.889999
+0441051,Avenida Paulista,Santana,São Paulo,SP,-23.647478,-46.784404
+0441992,Avenida Brasil,Santana,São Paulo,SP,-23.393512,-46.531322
+0442170,Rua Pamplona,Tatuapé,São Paulo,SP,-23.671446,-46.575469
+0442924,Rua Pamplona,Tatuapé,São Paulo,SP,-23.467648,-46.613957
+0443271,Avenida 9 de Julho,Ipiranga,São Paulo,SP,-23.373221,-46.757326
+0443433,Rua Harmonia,Ipiranga,São Paulo,SP,-23.628217,-46.857579
+0444569,Rua Haddock Lobo,Santo André,Santo André,SP,-23.632368,-46.776255
+0444303,Avenida Sumaré,Santo André,Santo André,SP,-23.560014,-46.63731
+0445555,Rua Augusta,São Bernardo,São Bernardo do Campo,SP,-23.484583,-46.619644
+0445598,Rua Bela Cintra,São Bernardo,São Bernardo do Campo,SP,-23.809045,-46.614804
+0450161,Avenida Rebouças,Guarulhos,Guarulhos,SP,-23.434621,-46.601819
+0450070,Avenida Brasil,Guarulhos,Guarulhos,SP,-23.714111,-46.766142
+0451413,Avenida Brasil,Osasco,Osasco,SP,-23.38768,-46.474639
+0451592,Rua Estados Unidos,Osasco,Osasco,SP,-23.701937,-46.756395
+0452673,Rua da Liberdade,Bela Vista,São Paulo,SP,-23.685412,-46.731557
+0452209,Rua da Liberdade,Bela Vista,São Paulo,SP,-23.604236,-46.735303
+0453405,Avenida Europa,Consolação,São Paulo,SP,-23.444478,-46.514739
+0453323,Avenida Paulista,Consolação,São Paulo,SP,-23.335037,-46.773213
+0454469,Avenida Brigadeiro Faria Lima,Jardins,São Paulo,SP,-23.673359,-46.768714
+0454075,Rua Consolação,Jardins,São Paulo,SP,-23.696121,-46.689144
+0460955,Avenida Brasil,Higienópolis,São Paulo,SP,-23.574034,-46.637716
+0460378,Avenida Angélica,Higienópolis,São Paulo,SP,-23.589025,-46.528108
+0461720,Rua Harmonia,Centro,São Paulo,SP,-23.649359,-46.379756
+0461669,Avenida Angélica,Centro,São Paulo,SP,-23.740728,-46.689811
+0462306,Rua Consolação,Itaim Bibi,São Paulo,SP,-23.537738,-46.666899
+0462270,Avenida Angélica,Itaim Bibi,São Paulo,SP,-23.541552,-46.633265
+0463159,Rua Mourato Coelho,Vila Olímpia,São Paulo,SP,-23.586078,-46.477618
+0463351,Rua da Liberdade,Vila Olímpia,São Paulo,SP,-23.513928,-46.475084
+0920517,Rua Augusta,Moema,São Paulo,SP,-23.807251,-46.634982
+0920094,Rua Augusta,Moema,São Paulo,SP,-23.712186,-46.836902
+0921003,Rua da Liberdade,Pinheiros,São Paulo,SP,-23.580921,-46.620822
+0921165,Rua Estados Unidos,Pinheiros,São Paulo,SP,-23.571411,-46.816619
+0922574,Rua Mourato Coelho,Vila Madalena,São Paulo,SP,-23.542901,-46.652853
+0922925,Avenida Ibirapuera,Vila Madalena,São Paulo,SP,-23.55743,-46.645643
+0930596,Rua Augusta,Perdizes,São Paulo,SP,-23.67309,-46.695267
+0930315,Rua Augusta,Perdizes,São Paulo,SP,-23.729559,-46.447427
+0931920,Rua Cardeal Arcoverde,Lapa,São Paulo,SP,-23.678738,-46.497491
+0931105,Rua Estados Unidos,Lapa,São Paulo,SP,-23.654949,-46.522922
+0932997,Avenida Brasil,Santana,São Paulo,SP,-23.593531,-46.685533
+0932885,Avenida Rebouças,Santana,São Paulo,SP,-23.450245,-46.453103
+1230902,Rua Vergueiro,Tatuapé,São Paulo,SP,-23.6045,-46.626509
+1230801,Avenida Sumaré,Tatuapé,São Paulo,SP,-23.366544,-46.753817
+1231830,Rua Mourato Coelho,Ipiranga,São Paulo,SP,-23.562705,-46.607263
+1231110,Rua Itapeva,Ipiranga,São Paulo,SP,-23.570943,-46.646518
+1232227,Avenida Ibirapuera,Santo André,Santo André,SP,-23.485859,-46.396869
+1232312,Avenida Brasil,Santo André,Santo André,SP,-23.462215,-46.886293
+0950024,Rua da Liberdade,São Bernardo,São Bernardo do Campo,SP,-23.620886,-46.753413
+0950885,Avenida Ibirapuera,São Bernardo,São Bernardo do Campo,SP,-23.373762,-46.557866
+0951656,Avenida Angélica,Guarulhos,Guarulhos,SP,-23.746533,-46.666034
+0951339,Rua da Liberdade,Guarulhos,Guarulhos,SP,-23.534271,-46.666871
+0960182,Rua Augusta,Osasco,Osasco,SP,-23.795668,-46.794852
+0960111,Rua Harmonia,Osasco,Osasco,SP,-23.639951,-46.712321
+0961321,Avenida Brigadeiro Faria Lima,Bela Vista,São Paulo,SP,-23.808247,-46.541282
+0961394,Rua Augusta,Bela Vista,São Paulo,SP,-23.521733,-46.687284
+0740725,Rua Harmonia,Consolação,São Paulo,SP,-23.69253,-46.594253
+0740551,Avenida Sumaré,Consolação,São Paulo,SP,-23.661397,-46.909907
+0741686,Rua Cardeal Arcoverde,Jardins,São Paulo,SP,-23.52512,-46.534007
+0741942,Avenida Brigadeiro Faria Lima,Jardins,São Paulo,SP,-23.604166,-46.573145
+0750737,Rua Cardeal Arcoverde,Higienópolis,São Paulo,SP,-23.452292,-46.742055
+0750418,Avenida Angélica,Higienópolis,São Paulo,SP,-23.649993,-46.471729
+0751130,Rua Pamplona,Centro,São Paulo,SP,-23.49898,-46.471088
+0751693,Rua Peixoto Gomide,Centro,São Paulo,SP,-23.563751,-46.705509
