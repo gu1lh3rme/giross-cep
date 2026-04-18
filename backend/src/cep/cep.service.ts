@@ -54,24 +54,119 @@ export class CepService {
 
     const results: CepSearchResult[] = [];
 
-    // Se temos coordenadas válidas, busca por proximidade usando a API
+    // 🎯 ESTRATÉGIA APRIMORADA: API /nearest + dados locais + busca por cidade
     if (originCep.latitude && originCep.longitude) {
-      const nearbyFromApi = await this.cepAbertoService.findNearbyByCoordinates(
-        originCep.latitude,
-        originCep.longitude,
-        raioKm * 1000 // converte km para metros
-      );
-
-      if (nearbyFromApi && nearbyFromApi.length > 0) {
-        for (const item of nearbyFromApi) {
-          const distance = haversineDistance(
+      console.log(`🔍 Iniciando busca otimizada para ${originCep.localidade}, ${originCep.uf}`);
+      
+      // 1️⃣ BUSCA INICIAL: CEP mais próximo via API /nearest (sempre atualizado)
+      if (this.cepAbertoService.isConfigured()) {
+        try {
+          const nearestCep = await this.cepAbertoService.findNearestByCoordinates(
             originCep.latitude,
-            originCep.longitude,
-            item.latitude,
-            item.longitude,
+            originCep.longitude
           );
+          
+          if (nearestCep) {
+            const distance = haversineDistance(
+              originCep.latitude, originCep.longitude,
+              nearestCep.latitude, nearestCep.longitude,
+            );
+            
+            if (distance <= raioKm) {
+              results.push({
+                cep: nearestCep.cep,
+                logradouro: nearestCep.logradouro,
+                bairro: nearestCep.bairro,
+                localidade: nearestCep.localidade,
+                uf: nearestCep.uf,
+                latitude: nearestCep.latitude,
+                longitude: nearestCep.longitude,
+                distanciaKm: Math.round(distance * 1000) / 1000,
+              });
+              console.log(`✅ API /nearest: encontrado CEP ${nearestCep.cep} a ${distance.toFixed(2)}km`);
+            }
+          }
+        } catch (error) {
+          console.warn(`⚠️ Erro na busca via API /nearest:`, error);
+        }
+      }
+      
+      // 2️⃣ BUSCA COMPLEMENTAR: CEPs da mesma cidade via API (dados atualizados)
+      if (originCep.localidade && this.cepAbertoService.isConfigured()) {
+        try {
+          const cityResults = await this.cepAbertoService.findCepsFromSameCity(
+            originCep.localidade,
+            originCep.uf
+          );
+          
+          // Filtra CEPs da cidade por proximidade
+          for (const item of cityResults) {
+            if (item.latitude && item.longitude) {
+              const distance = haversineDistance(
+                originCep.latitude,
+                originCep.longitude,
+                item.latitude,
+                item.longitude,
+              );
 
-          if (distance <= raioKm) {
+              if (distance <= raioKm) {
+                // Evita duplicatas
+                const exists = results.find(r => r.cep === item.cep);
+                if (!exists) {
+                  results.push({
+                    cep: item.cep,
+                    logradouro: item.logradouro,
+                    bairro: item.bairro,
+                    localidade: item.localidade,
+                    uf: item.uf,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                    distanciaKm: Math.round(distance * 1000) / 1000,
+                  });
+                }
+              }
+            }
+          }
+          
+          console.log(`✅ API cidade: encontrados ${cityResults.length} CEPs de ${originCep.localidade}`);
+        } catch (error) {
+          console.warn(`⚠️ Erro na busca por cidade via API:`, error);
+        }
+      }
+      
+      const estadosDados = this.csvService.getStatesWithLocalData();
+      
+      if (estadosDados.includes(originCep.uf)) {
+        console.log(`📋 Complementando com dados locais de ${originCep.uf}...`);
+        const initialCount = results.length;
+        await this.searchStateDataWithCoordinates(originCep, raioKm, results);
+        
+        const addedFromLocal = results.length - initialCount;
+        console.log(`✅ Dados locais: adicionados ${addedFromLocal} CEPs próximos`);
+      } else {
+        // Para estados sem dados locais, tenta busca individual
+        console.log(`🔍 Estado ${originCep.uf} sem dados locais, tentando busca individual...`);
+        await this.searchNearbyIndividually(originCep, raioKm, results);
+      }
+    }
+
+    // 🔄 FALLBACK FINAL: Se não obteve resultados suficientes, busca em todos os dados locais
+    if (results.length === 0) {
+      console.log(`🔄 Fallback: buscando em todos os dados CSV locais...`);
+      const allCeps = this.csvService.getAllCeps();
+      
+      for (const item of allCeps) {
+        const distance = haversineDistance(
+          originCep.latitude,
+          originCep.longitude,
+          item.latitude,
+          item.longitude,
+        );
+        
+        if (distance <= raioKm) {
+          // Evita duplicatas com resultados já encontrados
+          const exists = results.find(r => r.cep === item.cep);
+          if (!exists) {
             results.push({
               cep: item.cep,
               logradouro: item.logradouro,
@@ -84,51 +179,18 @@ export class CepService {
             });
           }
         }
-      } else {
-        // Busca por proximidade retornou vazio (rate limit ou sem dados)
-        console.warn('Busca por proximidade retornou vazio, tentando busca individual...');
-        
-        // 🇧🇷 Busca usando dados locais do estado (se disponível)
-        const estadosDados = this.csvService.getStatesWithLocalData();
-        
-        if (estadosDados.includes(originCep.uf)) {
-          await this.searchStateDataWithCoordinates(originCep, raioKm, results);
-        } else {
-          // Para estados sem dados locais, tenta busca individual CEPs próximos
-          await this.searchNearbyIndividually(originCep, raioKm, results);
-        }
       }
-    }
-
-    // Se não obteve resultados da API ou houve erro, usa dados locais como fallback
-    if (results.length === 0) {
-      const allCeps = this.csvService.getAllCeps();
-      
-      for (const item of allCeps) {
-        const distance = haversineDistance(
-          originCep.latitude,
-          originCep.longitude,
-          item.latitude,
-          item.longitude,
-        );
-        
-        if (distance <= raioKm) {
-          results.push({
-            cep: item.cep,
-            logradouro: item.logradouro,
-            bairro: item.bairro,
-            localidade: item.localidade,
-            uf: item.uf,
-            latitude: item.latitude,
-            longitude: item.longitude,
-            distanciaKm: Math.round(distance * 1000) / 1000,
-          });
-        }
-      }
+      console.log(`✅ Fallback: encontrados ${results.length} CEPs em todos os dados locais`);
     }
 
     // Ordena por distância
     results.sort((a, b) => a.distanciaKm - b.distanciaKm);
+    
+    // 📊 Log final do resultado
+    console.log(`🎯 RESULTADO FINAL: ${results.length} CEPs encontrados em raio de ${raioKm}km de ${originCep.cep}`);
+    if (results.length > 0) {
+      console.log(`📏 Distâncias: ${results[0].distanciaKm}km (mais próximo) até ${results[results.length-1].distanciaKm}km (mais distante)`);
+    }
     
     return results;
   }
@@ -247,23 +309,27 @@ export class CepService {
           const distance = haversineDistance(originLat, originLng, lat2, lon2);
 
           if (distance <= raioKm) {
-            results.push({
-              cep: estadoCepData.cep,
-              logradouro: estadoCepData.logradouro,
-              bairro: estadoCepData.bairro,
-              localidade: estadoCepData.localidade,
-              uf: estado,
-              latitude: lat2,
-              longitude: lon2,  
-              distanciaKm: Math.round(distance * 1000) / 1000,
-            });
-            found++;
-            
-            console.log(`✅ CEP ${estadoCepData.cep} (${estadoCepData.localidade}) encontrado a ${distance.toFixed(2)}km`);
+            // Evita duplicatas com resultados já encontrados
+            const exists = results.find(r => r.cep === estadoCepData.cep);
+            if (!exists) {
+              results.push({
+                cep: estadoCepData.cep,
+                logradouro: estadoCepData.logradouro,
+                bairro: estadoCepData.bairro,
+                localidade: estadoCepData.localidade,
+                uf: estado,
+                latitude: lat2,
+                longitude: lon2,  
+                distanciaKm: Math.round(distance * 1000) / 1000,
+              });
+              found++;
+              
+              console.log(`✅ CEP ${estadoCepData.cep} (${estadoCepData.localidade}) encontrado a ${distance.toFixed(2)}km`);
+            }
           }
           
           // Para se encontrou alguns resultados
-          /* if (found >= 100) {
+          /* if (found >= 15) {
             console.log('⏹️ Parando busca - já encontrados 15 resultados');
             break;
           } */
@@ -326,17 +392,21 @@ export class CepService {
             );
 
             if (distance <= raioKm) {
-              results.push({
-                cep: cepData.cep,
-                logradouro: cepData.logradouro,
-                bairro: cepData.bairro,
-                localidade: cepData.localidade,
-                uf: cepData.uf,
-                latitude: cepData.latitude,
-                longitude: cepData.longitude,
-                distanciaKm: Math.round(distance * 1000) / 1000,
-              });
-              found++;
+              // Evita duplicatas com resultados já encontrados
+              const exists = results.find(r => r.cep === cepData.cep);
+              if (!exists) {
+                results.push({
+                  cep: cepData.cep,
+                  logradouro: cepData.logradouro,
+                  bairro: cepData.bairro,
+                  localidade: cepData.localidade,
+                  uf: cepData.uf,
+                  latitude: cepData.latitude,
+                  longitude: cepData.longitude,
+                  distanciaKm: Math.round(distance * 1000) / 1000,
+                });
+                found++;
+              }
             }
           }
           

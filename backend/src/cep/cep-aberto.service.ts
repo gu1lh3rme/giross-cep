@@ -58,47 +58,50 @@ export class CepAbertoService {
   }
 
   /**
-   * Busca CEPs próximos usando latitude e longitude
-   * Método alternativo usando coordenadas geográficas
+   * 🎯 BUSCA POR COORDENADAS: Encontra CEP mais próximo usando lat/lng
+   * Endpoint: /nearest com parâmetros lat e lng
+   * Raio de busca: 10km (limitação da API)
    */
-  async findNearbyByCoordinates(
+  async findNearestByCoordinates(
     lat: number,
-    lng: number,
-    radius: number = 5000 // metros
-  ): Promise<CepData[]> {
+    lng: number
+  ): Promise<CepData | null> {
     try {
-      this.logger.log(`Buscando CEPs próximos a ${lat},${lng} em raio de ${radius}m`);
+      this.logger.log(`Buscando CEP mais próximo a ${lat}, ${lng} via API /nearest`);
 
       const response = await firstValueFrom(
-        this.httpService.get(`${this.baseURL}/address`, {
-          params: {
-            lat,
-            lng,
-            radius,
-          },
+        this.httpService.get(`${this.baseURL}/nearest`, {
+          params: { lat, lng },
           headers: {
             Authorization: `Token token=${this.token}`,
           },
         })
       );
 
-      if (!response.data || !Array.isArray(response.data)) {
-        return [];
+      if (!response.data || Object.keys(response.data).length === 0) {
+        this.logger.warn(`Nenhum CEP encontrado próximo a ${lat}, ${lng}`);
+        return null;
       }
 
-      return response.data.map((item: any) => this.mapApiResponseToCepData(item));
+      const result = this.mapApiResponseToCepData(response.data);
+      this.logger.log(`Encontrado CEP ${result.cep} próximo a ${lat}, ${lng}`);
+      return result;
     } catch (error: any) {
-      this.logger.error(`Erro ao buscar CEPs próximos:`, error.message);
-      return [];
+      this.logger.warn(`Erro ao buscar CEP próximo a ${lat}, ${lng}:`, error.message);
+      return null;
     }
   }
 
   /**
-   * Busca CEPs de uma cidade específica
+   * 🎯 ESTRATÉGIA HÍBRIDA: Busca CEPs da mesma cidade via API
+   * Usa busca por cidade para complementar dados locais
    */
-  async findCepsByCity(city: string, state: string): Promise<CepData[]> {
+  async findCepsFromSameCity(
+    city: string,
+    state: string
+  ): Promise<CepData[]> {
     try {
-      this.logger.log(`Buscando CEPs da cidade ${city}, ${state}`);
+      this.logger.log(`Buscando CEPs da cidade ${city}, ${state} via API`);
 
       const response = await firstValueFrom(
         this.httpService.get(`${this.baseURL}/cities`, {
@@ -113,14 +116,25 @@ export class CepAbertoService {
       );
 
       if (!response.data || !Array.isArray(response.data)) {
+        this.logger.warn(`Nenhum CEP encontrado via API para ${city}, ${state}`);
         return [];
       }
 
-      return response.data.map((item: any) => this.mapApiResponseToCepData(item));
+      const mappedResults = response.data.map((item: any) => this.mapApiResponseToCepData(item));
+      this.logger.log(`Encontrados ${mappedResults.length} CEPs via API para ${city}, ${state}`);
+      return mappedResults;
     } catch (error: any) {
-      this.logger.error(`Erro ao buscar CEPs da cidade ${city}:`, error.message);
+      this.logger.warn(`Erro ao buscar CEPs da cidade ${city}, ${state}:`, error.message);
       return [];
     }
+  }
+
+  /**
+   * 📋 MÉTODO LEGADO: Busca CEPs de uma cidade específica
+   * Use findCepsFromSameCity() para nova implementação otimizada
+   */
+  async findCepsByCity(city: string, state: string): Promise<CepData[]> {
+    return await this.findCepsFromSameCity(city, state);
   }
 
   /**
@@ -149,6 +163,6 @@ export class CepAbertoService {
    * Verifica se o token está configurado corretamente
    */
   isConfigured(): boolean {
-    return !!this.token && this.token !== process.env.CEP_ABERTO_TOKEN && this.token.length > 10;
+    return !!this.token && this.token.length > 10;
   }
 }
