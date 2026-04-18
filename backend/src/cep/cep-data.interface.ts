@@ -14,5 +14,7 @@ export interface CepSearchResult {
   bairro: string;
   localidade: string;
   uf: string;
+  latitude?: number;
+  longitude?: number;
   distanciaKm: number;
 }

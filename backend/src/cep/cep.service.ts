@@ -78,6 +78,8 @@ export class CepService {
               bairro: item.bairro,
               localidade: item.localidade,
               uf: item.uf,
+              latitude: item.latitude,
+              longitude: item.longitude,
               distanciaKm: Math.round(distance * 1000) / 1000,
             });
           }
@@ -117,6 +119,8 @@ export class CepService {
             bairro: item.bairro,
             localidade: item.localidade,
             uf: item.uf,
+            latitude: item.latitude,
+            longitude: item.longitude,
             distanciaKm: Math.round(distance * 1000) / 1000,
           });
         }
@@ -166,6 +170,7 @@ export class CepService {
 
   /**
    * 🇧🇷 Busca CEPs usando dados locais de qualquer estado brasileiro
+   * 🔧 NOVA ESTRATÉGIA: Usa coordenadas médias do estado quando CEP não encontrado na API
    */
   private async searchStateDataWithCoordinates(
     originCep: CepData,
@@ -176,7 +181,28 @@ export class CepService {
       const estado = originCep.uf;
       console.log(`📍 Buscando CEPs de ${estado} usando dados locais...`);
       
-      // Busca CEPs do estado no CSV local
+      // 📍 NOVA LÓGICA: Se coordenadas são 0 ou muito distantes da média do estado,
+      // usa coordenadas médias calculadas dinamicamente
+      let originLat = typeof originCep.latitude === 'string' ? parseFloat(originCep.latitude) : originCep.latitude;
+      let originLng = typeof originCep.longitude === 'string' ? parseFloat(originCep.longitude) : originCep.longitude;
+      
+      // Verifica se deve usar coordenadas médias calculadas
+      const coordenadasMedias = this.csvService.getStateCoordinates(estado);
+      if (originLat === 0 || originLng === 0 || !coordenadasMedias) {
+        console.log(`⚙️ Usando coordenadas médias calculadas para ${estado}: ${coordenadasMedias?.lat}, ${coordenadasMedias?.lng}`);
+        originLat = coordenadasMedias?.lat || originLat;
+        originLng = coordenadasMedias?.lng || originLng;
+      } else {
+        // Verifica se coordenadas estão muito distantes da média do estado
+        const distanciaMedia = haversineDistance(originLat, originLng, coordenadasMedias.lat, coordenadasMedias.lng);
+        if (distanciaMedia > 50) { // Se > 50km da média do estado
+          console.log(`⚙️ Coordenadas muito distantes da média do estado (${distanciaMedia.toFixed(0)}km), usando médias calculadas`);
+          originLat = coordenadasMedias.lat;
+          originLng = coordenadasMedias.lng;
+        }
+      }
+      
+      // Busca TODOS os CEPs do estado (incluindo coordenadas simuladas)
       const estadoCeps = this.csvService.getCepsByRegion(estado);
       console.log(`📋 Encontrados ${estadoCeps.length} CEPs de ${estado} no CSV`);
       
@@ -184,80 +210,63 @@ export class CepService {
         console.log(`⚠️ Nenhum dado local encontrado para ${estado}`);
         return;
       }
-
-      // Obtém coordenadas do CEP de origem para gerar coordenadas próximas
-      const originLat = typeof originCep.latitude === 'string' ? parseFloat(originCep.latitude) : originCep.latitude;
-      const originLng = typeof originCep.longitude === 'string' ? parseFloat(originCep.longitude) : originCep.longitude;
       
-      // Seleciona uma amostra de CEPs para testar (para não sobrecarregar)
-      const sampleSize = Math.min(estadoCeps.length, 50);
-      const sampleCeps = estadoCeps
-        .sort(() => Math.random() - 0.5) // Embaralha
-        .slice(0, sampleSize); // Pega os primeiros
+      // ✅ CORREÇÃO: Aceita CEPs com coordenadas válidas (reais OU simuladas)
+      const cepsComCoordenadas = estadoCeps.filter(cep => 
+        cep.latitude && cep.longitude && 
+        !isNaN(parseFloat(cep.latitude.toString())) && 
+        !isNaN(parseFloat(cep.longitude.toString()))
+      );
       
-      console.log(`🎯 Testando ${sampleSize} CEPs de ${estado}...`);
+      console.log(`🌎 CEPs com coordenadas válidas: ${cepsComCoordenadas.length} de ${estadoCeps.length}`);
+      
+      if (cepsComCoordenadas.length === 0) {
+        console.log(`⚠️ Nenhum CEP com coordenadas válidas encontrado para ${estado}`);
+        return;
+      }
+      
+      console.log(`🎯 Testando ${cepsComCoordenadas.length} CEPs de ${estado}...`);
       
       let found = 0;
       let tested = 0;
       
-      for (const estadoCepData of sampleCeps) {
+      for (const estadoCepData of cepsComCoordenadas) {
         try {
           tested++;
           
-          // Gerar coordenadas simuladas com base no CEP de origem (não no centro do estado)
-          // para garantir que os CEPs estejam dentro do raio de busca
-          let cepWithCoords;
-          let useSimulatedCoords = true;
+          // 🌎 Usa coordenadas (reais ou simuladas)
+          const lat2 = typeof estadoCepData.latitude === 'string' ? parseFloat(estadoCepData.latitude) : estadoCepData.latitude;
+          const lon2 = typeof estadoCepData.longitude === 'string' ? parseFloat(estadoCepData.longitude) : estadoCepData.longitude;
           
-          // Gerar coordenadas simuladas baseadas no CEP de origem + variação por CEP número
-          const cepNumero = parseInt(estadoCepData.cep);
-          const latVariation = ((cepNumero % 1000) / 1000 - 0.5) * 0.01; // ±0.005° (≈±0.5km)
-          const lngVariation = (((cepNumero / 1000) % 1000) / 1000 - 0.5) * 0.01;
-          
-          cepWithCoords = {
-            cep: estadoCepData.cep,
-            logradouro: estadoCepData.logradouro || 'Rua Local',
-            bairro: estadoCepData.bairro || 'Centro',
-            localidade: estadoCepData.localidade || 'Curitiba',
-            uf: estado,
-            // Coordenadas simuladas próximas ao CEP de origem
-            latitude: originLat + latVariation,
-            longitude: originLng + lngVariation,
-          };
-          
-          if (cepWithCoords && cepWithCoords.latitude && cepWithCoords.longitude) {
-            // Calcula distância - garantindo que as coordenadas são números
-            const lat1 = typeof originCep.latitude === 'string' ? parseFloat(originCep.latitude) : originCep.latitude;
-            const lon1 = typeof originCep.longitude === 'string' ? parseFloat(originCep.longitude) : originCep.longitude;
-            const lat2 = typeof cepWithCoords.latitude === 'string' ? parseFloat(cepWithCoords.latitude) : cepWithCoords.latitude;
-            const lon2 = typeof cepWithCoords.longitude === 'string' ? parseFloat(cepWithCoords.longitude) : cepWithCoords.longitude;
-            
-            const distance = haversineDistance(lat1, lon1, lat2, lon2);
-
-            if (distance <= raioKm) {
-              results.push({
-                cep: cepWithCoords.cep,
-                logradouro: cepWithCoords.logradouro || estadoCepData.logradouro,
-                bairro: cepWithCoords.bairro || estadoCepData.bairro,
-                localidade: cepWithCoords.localidade || estadoCepData.localidade,
-                uf: estado,
-                distanciaKm: Math.round(distance * 1000) / 1000,
-              });
-              found++;
-              
-              if (useSimulatedCoords) {
-                console.log(`📍 CEP ${cepWithCoords.cep} adicionado com coordenadas simuladas (${distance.toFixed(2)}km)`);
-              }
-            }
+          // Valida se as coordenadas são números válidos
+          if (isNaN(lat2) || isNaN(lon2)) {
+            continue;
           }
           
-          // Não há delay necessário pois usando dados simulados (sem API calls)
+          // Calcula distância entre coordenadas
+          const distance = haversineDistance(originLat, originLng, lat2, lon2);
+
+          if (distance <= raioKm) {
+            results.push({
+              cep: estadoCepData.cep,
+              logradouro: estadoCepData.logradouro,
+              bairro: estadoCepData.bairro,
+              localidade: estadoCepData.localidade,
+              uf: estado,
+              latitude: lat2,
+              longitude: lon2,  
+              distanciaKm: Math.round(distance * 1000) / 1000,
+            });
+            found++;
+            
+            console.log(`✅ CEP ${estadoCepData.cep} (${estadoCepData.localidade}) encontrado a ${distance.toFixed(2)}km`);
+          }
           
           // Para se encontrou alguns resultados
-          if (found >= 15) {
+          /* if (found >= 100) {
             console.log('⏹️ Parando busca - já encontrados 15 resultados');
             break;
-          }
+          } */
         } catch (error) {
           // Continua com próximo CEP se um falhar
           continue;
@@ -323,6 +332,8 @@ export class CepService {
                 bairro: cepData.bairro,
                 localidade: cepData.localidade,
                 uf: cepData.uf,
+                latitude: cepData.latitude,
+                longitude: cepData.longitude,
                 distanciaKm: Math.round(distance * 1000) / 1000,
               });
               found++;

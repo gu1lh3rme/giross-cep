@@ -149,6 +149,6 @@ export class CepAbertoService {
    * Verifica se o token está configurado corretamente
    */
   isConfigured(): boolean {
-    return !!this.token && this.token !== 'seu-token-aqui' && this.token.length > 10;
+    return !!this.token && this.token !== process.env.CEP_ABERTO_TOKEN && this.token.length > 10;
   }
 }
