@@ -463,21 +463,50 @@ export class CsvService implements OnModuleInit {
     const seed = cepNumber % 1000; // Usa últimos 3 dígitos como seed
     
     // 📍 Gera variação baseada no CEP (determinística para o mesmo CEP)
-    const latVariation = ((seed % 100) - 50) * 0.002; // ±0.1 grau aprox
-    const lngVariation = (((seed / 100) % 100) - 50) * 0.002;
+    const latVariation = ((seed % 100) - 50) * 0.004; // ±0.2 grau aprox (maior dispersão)
+    const lngVariation = (((seed / 100) % 100) - 50) * 0.004;
     
     // 🗺️ Ajuste específico por estado para melhor distribuição geográfica
     const stateFactors = {
-      'SP': { latRange: 0.5, lngRange: 0.4 }, // Grande dispersão urbana
-      'MG': { latRange: 0.7, lngRange: 0.6 }, // Estado extenso
-      'RJ': { latRange: 0.3, lngRange: 0.3 }, // Mais concentrado
-      'PR': { latRange: 0.4, lngRange: 0.5 }, // Moderado
-      'RS': { latRange: 0.6, lngRange: 0.5 }, // Sul extenso
-      'BA': { latRange: 0.8, lngRange: 0.7 }, // Nordeste grande
-      'GO': { latRange: 0.6, lngRange: 0.6 }, // Centro-oeste
+      // ✅ REGIÃO SUL
+      'PR': { latRange: 0.6, lngRange: 0.5 }, // Curitiba, Londrina, Maringá
+      'SC': { latRange: 0.6, lngRange: 0.5 }, // Florianópolis, Joinville, Blumenau  
+      'RS': { latRange: 0.8, lngRange: 0.6 }, // Porto Alegre, Caxias do Sul, Pelotas
+      
+      // ✅ REGIÃO SUDESTE
+      'SP': { latRange: 0.7, lngRange: 0.6 }, // Grande São Paulo, interior extenso
+      'RJ': { latRange: 0.5, lngRange: 0.4 }, // Rio, Niterói, Baixada Fluminense
+      'MG': { latRange: 1.0, lngRange: 0.8 }, // Estado extenso: BH, interior
+      'ES': { latRange: 0.6, lngRange: 0.5 }, // Vitória, Vila Velha, Serra
+      
+      // ✅ REGIÃO CENTRO-OESTE  
+      'GO': { latRange: 0.8, lngRange: 0.7 }, // Goiânia, interior extenso
+      'MT': { latRange: 1.2, lngRange: 1.0 }, // Estado imenso: Cuiabá, interior
+      'MS': { latRange: 0.9, lngRange: 0.8 }, // Campo Grande, Dourados
+      'DF': { latRange: 0.4, lngRange: 0.4 }, // Brasília, área metropolitana
+      
+      // ✅ REGIÃO NORDESTE
+      'BA': { latRange: 1.0, lngRange: 0.9 }, // Salvador, interior extenso
+      'PE': { latRange: 0.6, lngRange: 0.5 }, // Recife, Caruaru, Petrolina
+      'CE': { latRange: 0.7, lngRange: 0.6 }, // Fortaleza, interior
+      'PB': { latRange: 0.5, lngRange: 0.4 }, // João Pessoa, Campina Grande
+      'RN': { latRange: 0.5, lngRange: 0.4 }, // Natal, Mossoró  
+      'AL': { latRange: 0.4, lngRange: 0.4 }, // Maceió, Arapiraca
+      'SE': { latRange: 0.3, lngRange: 0.3 }, // Aracaju, menor estado
+      'PI': { latRange: 0.6, lngRange: 0.5 }, // Teresina, Parnaíba
+      'MA': { latRange: 0.8, lngRange: 0.7 }, // São Luís, interior extenso
+      
+      // ✅ REGIÃO NORTE
+      'AM': { latRange: 1.5, lngRange: 1.4 }, // Estado imenso: Manaus, interior
+      'PA': { latRange: 1.2, lngRange: 1.1 }, // Belém, interior extenso  
+      'AC': { latRange: 0.8, lngRange: 0.7 }, // Rio Branco, cidades do interior
+      'RO': { latRange: 0.7, lngRange: 0.6 }, // Porto Velho, interior
+      'RR': { latRange: 0.6, lngRange: 0.5 }, // Boa Vista, municípios  
+      'AP': { latRange: 0.5, lngRange: 0.4 }, // Macapá, Santana
+      'TO': { latRange: 0.7, lngRange: 0.6 }, // Palmas, Araguaína
     };
     
-    const factor = stateFactors[uf] || { latRange: 0.4, lngRange: 0.4 };
+    const factor = stateFactors[uf] || { latRange: 0.5, lngRange: 0.5 };
     
     return {
       lat: baseLat + (latVariation * factor.latRange),
